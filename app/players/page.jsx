@@ -16,7 +16,7 @@ export default function PlayersPage() {
       <ul>
         {players.map((p) => (
           <li key={p._id}>
-            {p.name} – {p.position} ({p.team?.name || "No team"})
+            {p.name} — {p.team?.map((t) => t.name).join(", ") || "No team"}
           </li>
         ))}
       </ul>
