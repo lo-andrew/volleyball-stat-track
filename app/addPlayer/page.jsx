@@ -84,30 +84,28 @@ export default function AddPlayerPage() {
 
         {/* Teams */}
         <div>
-          <label htmlFor="team" className="block font-medium mb-1">
-            Team(s)
-          </label>
-          <select
-            id="team"
-            name="team"
-            className="select select-bordered w-full"
-            multiple
-            onChange={(e) => {
-              const selected = Array.from(
-                e.target.selectedOptions,
-                (option) => option.value
-              );
-              formik.setFieldValue("team", selected);
-            }}
-            value={formik.values.team}
-            required
-          >
+          <label className="block font-medium mb-1">Team(s)</label>
+          <div className="space-y-2">
             {teams.map((t) => (
-              <option key={t._id} value={t._id}>
-                {t.name}
-              </option>
+              <label key={t._id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="team"
+                  value={t._id}
+                  checked={formik.values.team.includes(t._id)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const selectedTeams = formik.values.team.includes(value)
+                      ? formik.values.team.filter((id) => id !== value)
+                      : [...formik.values.team, value];
+                    formik.setFieldValue("team", selectedTeams);
+                  }}
+                  className="checkbox checkbox-primary"
+                />
+                <span>{t.name}</span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
 
         <button type="submit" className="btn btn-primary w-full mt-2">

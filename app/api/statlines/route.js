@@ -1,14 +1,21 @@
 import { dbConnect } from "@/lib/dbConnect";
 import StatLine from "@/lib/models/StatLine";
 
-// GET all statlines (with player + game populated)
-export async function GET() {
+export async function GET(req) {
   await dbConnect();
-  const statlines = await StatLine.find().populate("player").populate("game");
+  const { searchParams } = new URL(req.url);
+  const playerId = searchParams.get("player");
+
+  let query = {};
+  if (playerId) query.player = playerId;
+
+  const statlines = await StatLine.find(query)
+    .populate("player")
+    .populate("game");
+
   return Response.json(statlines);
 }
 
-// POST create a new statline
 export async function POST(req) {
   await dbConnect();
   const data = await req.json();

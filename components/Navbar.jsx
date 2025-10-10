@@ -6,8 +6,8 @@ export default function Navbar() {
   const pathname = usePathname().replace(/\/$/, ""); // remove trailing slash
 
   const links = [
-    { href: "/teams", label: "Teams Stats" },
-    { href: "/players", label: "Player Stats" },
+    { href: "/teams", label: "Teams" },
+    { href: "/players", label: "Players" },
     { href: "/addStats", label: "Add Stats" },
     { href: "/addPlayer", label: "Add Player" },
     { href: "/addTeam", label: "Add Team" },
