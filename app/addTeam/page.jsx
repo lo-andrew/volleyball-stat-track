@@ -4,16 +4,6 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 
 export default function AddTeamPage() {
-  const [players, setPlayers] = useState([]);
-
-  // Fetch all players for multi-select
-  useEffect(() => {
-    fetch("/api/players")
-      .then((res) => res.json())
-      .then((data) => setPlayers(data))
-      .catch(console.error);
-  }, []);
-
   const formik = useFormik({
     initialValues: {
       name: "",

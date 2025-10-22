@@ -11,6 +11,8 @@ export default function Navbar() {
     { href: "/addStats", label: "Add Stats" },
     { href: "/addPlayer", label: "Add Player" },
     { href: "/addTeam", label: "Add Team" },
+    { href: "/addGame", label: "Add Game" },
+    { href: "/games", label: "Games" },
   ];
 
   return (

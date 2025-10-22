@@ -1,16 +1,11 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Game from "@/lib/models/Game";
+import Team from "@/lib/models/Team";
 
 // GET all games (with populated teams + statlines)
 export async function GET() {
   await dbConnect();
-  const games = await Game.find()
-    .populate("teamA")
-    .populate("teamB")
-    .populate({
-      path: "statLines",
-      populate: { path: "player" },
-    });
+  const games = await Game.find().populate("teamA").populate("teamB");
   return Response.json(games);
 }
 
