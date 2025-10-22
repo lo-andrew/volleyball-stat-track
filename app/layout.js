@@ -19,9 +19,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="emerald">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navbar /> {/* <-- include the navbar here */}
+        <Navbar />
         {children}
       </body>
     </html>

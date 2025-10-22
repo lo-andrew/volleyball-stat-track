@@ -6,7 +6,6 @@ import { useFormik } from "formik";
 export default function AddGame() {
   const [teams, setTeams] = useState([]);
 
-  // Fetch teams from API
   useEffect(() => {
     fetch("/api/teams")
       .then((res) => res.json())

@@ -74,23 +74,41 @@ export default function AddStatLinePage() {
       game: "",
       kills: { kill: 0, totalAttempt: 0, error: 0 },
       serves: { ace: 0, attempts: 0, error: 0, zero: 0 },
-      digs: 0,
+      digStats: { successful: 0, error: 0 },
       blocks: { solo: 0, assist: 0, error: 0, zero: 0 },
-      general: { ballError: 0, setsPlayed: 0 },
-      reception: { errors: 0, attempt: 0 },
+      general: { ballError: 0 },
+      reception: { attempt: 0, zero: 0, errors: 0 },
     },
     onSubmit: async (values, { resetForm }) => {
-      const res = await fetch("/api/statlines", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      try {
+        // Validate the structure before sending
+        const statLineData = {
+          player: values.player,
+          game: values.game,
+          kills: { ...formik.initialValues.kills, ...values.kills },
+          serves: { ...formik.initialValues.serves, ...values.serves },
+          digStats: { ...formik.initialValues.digStats, ...values.digStats },
+          blocks: { ...formik.initialValues.blocks, ...values.blocks },
+          general: { ...formik.initialValues.general, ...values.general },
+          reception: { ...formik.initialValues.reception, ...values.reception },
+        };
 
-      if (res.ok) {
-        alert("StatLine added!");
-        resetForm();
-      } else {
+        const res = await fetch("/api/statlines", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(statLineData),
+        });
+
+        if (res.ok) {
+          alert("StatLine added!");
+          resetForm();
+        } else {
+          const error = await res.json();
+          alert(`Error adding statline: ${error.message}`);
+        }
+      } catch (error) {
         alert("Error adding statline");
+        console.error(error);
       }
     },
   });
@@ -109,6 +127,7 @@ export default function AddStatLinePage() {
               formik.handleChange(e);
               setSelectedGame(e.target.value);
             }}
+            className="select select-bordered w-full"
           >
             <option value=""> Select a Game </option>
             {games.map((game) => (
@@ -122,18 +141,19 @@ export default function AddStatLinePage() {
 
         {/* Select Player */}
         <div>
-          <label htmlFor="player">Select Player</label>
+          <label htmlFor="player">Player Selection</label>
           <select
             id="player"
             name="player"
             value={formik.values.player}
             onChange={formik.handleChange}
             disabled={!selectedGame || players.length === 0}
+            className="select select-bordered w-full"
           >
-            <option value="">-- Select a Player --</option>
+            <option value="">Select a Player</option>
 
             {selectedGame &&
-              // get players for each team separately
+              // get players for each team separately to KEY
               ["teamA", "teamB"].map((teamKey) => {
                 const teamPlayers = players.filter(
                   (p) =>
@@ -163,14 +183,12 @@ export default function AddStatLinePage() {
           </select>
         </div>
 
-        {/* Stat boxes */}
+        {/* kills */}
         <h3>Kills</h3>
         <div className="grid grid-cols-3 gap-6">
-          {/* kills */}
-
           {Object.entries(formik.values.kills).map(([field, value]) => (
             <StatButton
-              key={field}
+              key={`kills-${field}`}
               category="kills"
               field={field}
               value={value}
@@ -209,16 +227,21 @@ export default function AddStatLinePage() {
 
         {/* digs */}
         <h3>Digs</h3>
-        <StatButton
-          category="digs"
-          field="digs"
-          value={formik.values.digs}
-          setFieldValue={formik.setFieldValue}
-        />
+        <div className="grid grid-cols-2 gap-6">
+          {Object.entries(formik.values.digStats).map(([field, value]) => (
+            <StatButton
+              key={field}
+              category="digStats"
+              field={field}
+              value={value}
+              setFieldValue={formik.setFieldValue}
+            />
+          ))}
+        </div>
 
         {/* general */}
         <h3>General</h3>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {Object.entries(formik.values.general).map(([field, value]) => (
             <StatButton
               key={field}
@@ -232,7 +255,7 @@ export default function AddStatLinePage() {
 
         {/* reception */}
         <h3>Reception</h3>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-3 gap-6">
           {Object.entries(formik.values.reception).map(([field, value]) => (
             <StatButton
               key={field}
@@ -243,11 +266,6 @@ export default function AddStatLinePage() {
             />
           ))}
         </div>
-
-        {/* Repeat for other stats */}
-
-        {/* Repeat similarly for serves, blocks, reception, general */}
-        {/* You can group them visually with <fieldset> if needed */}
 
         <button type="submit" className="btn btn-primary w-full">
           Add StatLine

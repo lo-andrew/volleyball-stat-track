@@ -6,7 +6,6 @@ import { useFormik } from "formik";
 export default function AddPlayerPage() {
   const [teams, setTeams] = useState([]);
 
-  // Fetch teams from API
   useEffect(() => {
     fetch("/api/teams")
       .then((res) => res.json())
@@ -18,7 +17,7 @@ export default function AddPlayerPage() {
     initialValues: {
       name: "",
       position: "",
-      team: [], // array of team IDs
+      team: [],
     },
     onSubmit: async (values) => {
       try {
@@ -42,7 +41,7 @@ export default function AddPlayerPage() {
     <div className="max-w-md mx-auto mt-10 p-4 shadow-lg rounded-lg bg-base-100">
       <h1 className="text-2xl font-bold mb-4">Add New Player</h1>
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* Name */}
+        {/* name */}
         <div>
           <label htmlFor="name" className="block font-medium mb-1">
             Name
@@ -58,7 +57,7 @@ export default function AddPlayerPage() {
           />
         </div>
 
-        {/* Position */}
+        {/* position */}
         <div>
           <label htmlFor="position" className="block font-medium mb-1">
             Position
@@ -82,7 +81,7 @@ export default function AddPlayerPage() {
           </select>
         </div>
 
-        {/* Teams */}
+        {/* teams */}
         <div>
           <label className="block font-medium mb-1">Team(s)</label>
           <div className="space-y-2">
