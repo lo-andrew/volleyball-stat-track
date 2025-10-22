@@ -48,8 +48,8 @@ export default function PlayerDetailPage() {
             acc.serves.zero += s.serves?.zero || 0;
 
             // Digs
-            acc.digs.digs += s.digs?.digs || 0;
-            acc.digs.error += s.digs?.error || 0;
+            acc.digs.digs += s.digStats?.successful || 0;
+            acc.digs.error += s.digStats?.error || 0;
 
             // Blocks
             acc.blocks.solo += s.blocks?.solo || 0;
@@ -200,24 +200,27 @@ export default function PlayerDetailPage() {
                   - {s.game?.teamA?.name || "?"} vs {s.game?.teamB?.name || "?"}
                 </td>
                 <td>
-                  {s.kills.kill} / {s.kills.totalAttempt} (errors:{" "}
-                  {s.kills.error})
+                  {s.kills?.kill || 0} / {s.kills?.totalAttempt || 0} (errors:{" "}
+                  {s.kills?.error || 0})
                 </td>
                 <td>
-                  ace: {s.serves.ace} / {s.serves.attempts} (errors:{" "}
-                  {s.serves.error}, zeros: {s.serves.zero})
-                </td>
-                <td>{s.digs.digs}</td>
-                <td>
-                  solo: {s.blocks.solo} assist: {s.blocks.assist} (errors:{" "}
-                  {s.blocks.error}, zeros: {s.blocks.zero})
+                  ace: {s.serves?.ace || 0} / {s.serves?.attempts || 0} (errors:{" "}
+                  {s.serves?.error || 0}, zeros: {s.serves?.zero || 0})
                 </td>
                 <td>
-                  errors: {s.reception.errors}, attempts: {s.reception.attempt}
+                  {s.digStats?.successful || 0} | {s.digStats?.error || 0}
                 </td>
                 <td>
-                  ballError: {s.general.ballError}, setsPlayed:{" "}
-                  {s.general.setsPlayed}
+                  solo: {s.blocks?.solo || 0} assist: {s.blocks?.assist || 0}{" "}
+                  (errors: {s.blocks?.error || 0}, zeros: {s.blocks?.zero || 0})
+                </td>
+                <td>
+                  errors: {s.reception?.errors || 0}, attempts:{" "}
+                  {s.reception?.attempt || 0}
+                </td>
+                <td>
+                  ballError: {s.general?.ballError || 0}, setsPlayed:{" "}
+                  {s.general?.setsPlayed || 0}
                 </td>
               </tr>
             ))}
