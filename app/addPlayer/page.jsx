@@ -1,116 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormik } from "formik";
+import { useState } from "react";
+import useAddPlayer from "../hooks/useAddPlayer";
+import AddPlayerForm from "../components/AddPlayerForm";
 
 export default function AddPlayerPage() {
-  const [teams, setTeams] = useState([]);
+  const { teams, loading, error: fetchError, createPlayer } = useAddPlayer();
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/teams")
-      .then((res) => res.json())
-      .then((data) => setTeams(data))
-      .catch(console.error);
-  }, []);
+  const handleSubmit = async (values) => {
+    try {
+      setSubmitError(null);
+      setSubmitSuccess(false);
+      await createPlayer(values);
+      setSubmitSuccess(true);
+    } catch (err) {
+      setSubmitError(err.message);
+    }
+  };
 
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      position: "",
-      team: [],
-    },
-    onSubmit: async (values) => {
-      try {
-        const res = await fetch("/api/players", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
-        });
-
-        if (!res.ok) throw new Error("Failed to create player");
-        alert("Player created!");
-        formik.resetForm();
-      } catch (err) {
-        console.error(err);
-        alert("Error creating player");
-      }
-    },
-  });
+  if (loading) return <div className="p-4">Loading...</div>;
+  if (fetchError) return <div className="p-4 text-error">{fetchError}</div>;
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 shadow-lg rounded-lg bg-base-100">
       <h1 className="text-2xl font-bold mb-4">Add New Player</h1>
-      <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* name */}
-        <div>
-          <label htmlFor="name" className="block font-medium mb-1">
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            className="input input-bordered w-full"
-            onChange={formik.handleChange}
-            value={formik.values.name}
-            required
-          />
-        </div>
 
-        {/* position */}
-        <div>
-          <label htmlFor="position" className="block font-medium mb-1">
-            Position
-          </label>
-          <select
-            id="position"
-            name="position"
-            className="select select-bordered w-full"
-            onChange={formik.handleChange}
-            value={formik.values.position}
-            required
-          >
-            <option value="" disabled>
-              Select position
-            </option>
-            <option value="setter">Setter</option>
-            <option value="libero">Libero</option>
-            <option value="outside">Outside</option>
-            <option value="middle">Middle</option>
-            <option value="opposite">Opposite</option>
-          </select>
+      {submitSuccess && (
+        <div className="alert alert-success mb-4">
+          Player created successfully!
         </div>
+      )}
 
-        {/* teams */}
-        <div>
-          <label className="block font-medium mb-1">Team(s)</label>
-          <div className="space-y-2">
-            {teams.map((t) => (
-              <label key={t._id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="team"
-                  value={t._id}
-                  checked={formik.values.team.includes(t._id)}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const selectedTeams = formik.values.team.includes(value)
-                      ? formik.values.team.filter((id) => id !== value)
-                      : [...formik.values.team, value];
-                    formik.setFieldValue("team", selectedTeams);
-                  }}
-                  className="checkbox checkbox-primary"
-                />
-                <span>{t.name}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+      {submitError && (
+        <div className="alert alert-error mb-4">{submitError}</div>
+      )}
 
-        <button type="submit" className="btn btn-primary w-full mt-2">
-          Create Player
-        </button>
-      </form>
+      <AddPlayerForm teams={teams} onSubmit={handleSubmit} />
     </div>
   );
 }
