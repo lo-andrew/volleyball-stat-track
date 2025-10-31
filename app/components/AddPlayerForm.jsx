@@ -7,20 +7,22 @@ const validationSchema = Yup.object({
   team: Yup.array().of(Yup.string()),
 });
 
-export default function AddPlayerForm({ teams, onSubmit }) {
+export default function PlayerForm({
+  teams,
+  onSubmit,
+  initialValues = { name: "", position: "", team: [] },
+  isEditing = false,
+}) {
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      position: "",
-      team: [],
-    },
+    initialValues,
+    enableReinitialize: true, // important so it updates when editing
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
         await onSubmit(values);
-        resetForm();
+        if (!isEditing) resetForm(); // only reset if adding
       } catch (err) {
-        // Error handling is done in parent
+        console.error(err);
       }
     },
   });
@@ -107,7 +109,13 @@ export default function AddPlayerForm({ teams, onSubmit }) {
         className="btn btn-primary w-full mt-2"
         disabled={formik.isSubmitting}
       >
-        {formik.isSubmitting ? "Creating..." : "Create Player"}
+        {formik.isSubmitting
+          ? isEditing
+            ? "Updating..."
+            : "Creating..."
+          : isEditing
+          ? "Update Player"
+          : "Create Player"}
       </button>
     </form>
   );

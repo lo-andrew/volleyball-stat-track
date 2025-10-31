@@ -20,6 +20,7 @@ export default function AddGame() {
       teamB: "",
       pointsA: "",
       pointsB: "",
+      set: "",
     },
     onSubmit: async (values, { resetForm }) => {
       try {
@@ -44,7 +45,7 @@ export default function AddGame() {
       <h1 className="text-2xl font-bold mb-4">Add New Game</h1>
 
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* Date */}
+        {/* date */}
         <div>
           <label className="block font-medium mb-1">Date</label>
           <input
@@ -57,7 +58,7 @@ export default function AddGame() {
           />
         </div>
 
-        {/* Team A */}
+        {/* team a */}
         <div>
           <label className="block font-medium mb-1">Team A</label>
           <select
@@ -76,7 +77,7 @@ export default function AddGame() {
           </select>
         </div>
 
-        {/* Team B */}
+        {/* team b */}
         <div>
           <label className="block font-medium mb-1">Team B</label>
           <select
@@ -95,7 +96,7 @@ export default function AddGame() {
           </select>
         </div>
 
-        {/* Points */}
+        {/* points */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Points (Team A)</label>
@@ -123,7 +124,19 @@ export default function AddGame() {
           </div>
         </div>
 
-        {/* Submit */}
+        {/* set */}
+        <div>
+          <label className="block font-medium mb-1">Set</label>
+          <input
+            type="number"
+            name="set"
+            className="input input-bordered w-full"
+            value={formik.values.set ?? ""}
+            onChange={formik.handleChange}
+            required
+          />
+        </div>
+
         <button type="submit" className="btn btn-primary w-full">
           Add Game
         </button>

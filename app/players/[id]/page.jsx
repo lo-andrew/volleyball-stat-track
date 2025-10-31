@@ -4,19 +4,32 @@ import { useParams } from "next/navigation";
 import usePlayer from "../../hooks/usePlayer";
 import LifetimeStats from "../../components/LifetimeStats";
 import GameStats from "../../components/GameStats";
+import Link from "next/link";
 
 export default function PlayerDetailPage() {
   const { id: playerId } = useParams();
   const { player, statlines, lifetimeStats, loading, error } =
     usePlayer(playerId);
 
-  if (loading) return <p className="p-6">Loading...</p>;
-  if (error) return <p className="p-6">Error loading player.</p>;
-  if (!player) return <p className="p-6">Player not found.</p>;
+  if (loading) {
+    return <p className="p-6">Loading...</p>;
+  } else if (error) {
+    return <p className="p-6">Error loading player.</p>;
+  } else if (!player) {
+    return <p className="p-6">Player not found.</p>;
+  }
 
   return (
     <main className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-2">{player.name}</h1>
+      <div className="grid grid-cols-12">
+        <h1 className="text-2xl font-bold mb-2 col-span-4">{player.name}</h1>
+        <Link
+          href={`/players/${player._id}/edit`}
+          className="btn btn-primary col-start-12 col-span-1"
+        >
+          Edit
+        </Link>
+      </div>
       <p className="mb-1">
         <strong>Position:</strong> {player.position}
       </p>
