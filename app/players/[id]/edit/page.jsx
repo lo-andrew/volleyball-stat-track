@@ -33,7 +33,7 @@ export default function EditPlayerPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
-    router.push(`/players/${playerId}`); // go back to player detail
+    router.push(`/players/${playerId}`);
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
