@@ -35,6 +35,10 @@ export default function Home() {
         <p className="col-span-12 place-self-center mt-5">
           Track and analyze player performance over time.
         </p>
+        <h2>
+          Currently, only reading is available to prevent until maintenance is
+          complete
+        </h2>
         <div className="col-span-12 place-self-center mt-5">
           <Link className="mr-5" href={"/addPlayer"}>
             <button className="btn btn-primary">Add Player</button>
