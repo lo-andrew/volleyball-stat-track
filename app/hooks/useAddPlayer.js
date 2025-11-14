@@ -9,7 +9,10 @@ export default function useAddPlayer() {
     const fetchTeams = async () => {
       try {
         console.log("Fetching teams...");
-        const res = await fetch("/api/teams");
+        const res = await fetch("/api/teams", {
+          credentials: "include",
+        });
+
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
           console.error("Server error response:", errorData);
@@ -18,12 +21,12 @@ export default function useAddPlayer() {
           );
         }
 
-        const text = await res.text(); // Get response as text first
+        const text = await res.text();
         console.log("Raw response:", text);
 
         let data;
         try {
-          data = JSON.parse(text); // Then try to parse it
+          data = JSON.parse(text);
         } catch (parseErr) {
           console.error("JSON Parse error:", parseErr);
           throw new Error("Invalid JSON response from server");
@@ -51,6 +54,7 @@ export default function useAddPlayer() {
       const res = await fetch("/api/players", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(playerData),
       });
 

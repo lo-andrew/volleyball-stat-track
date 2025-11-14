@@ -35,7 +35,7 @@ export default function Home() {
         <p className="col-span-12 place-self-center mt-5">
           Track and analyze player performance over time.
         </p>
-        <h2>
+        <h2 className="col-span-12 place-self-center mt-5">
           Currently, only reading is available to prevent until maintenance is
           complete
         </h2>
