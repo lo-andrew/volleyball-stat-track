@@ -1,24 +1,53 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(req) {
-  const token = req.headers.get("authorization")?.split(" ")[1];
-  if (!token)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function middleware(req) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET);
-    return NextResponse.next();
-  } catch {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  // Public pages that don't require authentication
+  const publicPages = ["/login", "/register"];
+
+  // Pages that require authentication
+  const protectedPages = [
+    "/players",
+    "/teams",
+    "/games",
+    "/addPlayer",
+    "/addGame",
+    "/addStats",
+    "/addTeam",
+  ];
+
+  const pathname = req.nextUrl.pathname;
+
+  // Check if it's a protected page route
+  const isProtectedPage = protectedPages.some((page) =>
+    pathname.startsWith(page)
+  );
+
+  // If trying to access protected page without token, redirect to login
+  if (isProtectedPage && !token) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
+
+  // If trying to access login/register with valid token, redirect to home
+  if (publicPages.some((page) => pathname === page) && token) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/api/teams/:path*",
-    "/api/players/:path*",
-    "/api/games/:path*",
-    "/api/statlines/:path*",
+    "/players/:path*",
+    "/teams/:path*",
+    "/games/:path*",
+    "/addPlayer/:path*",
+    "/addGame/:path*",
+    "/addStats/:path*",
+    "/addTeam/:path*",
+    "/login",
+    "/register",
   ],
 };

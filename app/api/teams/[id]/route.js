@@ -1,10 +1,16 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Team from "@/lib/models/Team";
-import Player from "@/lib/models/Player"; // ensure Player model is registered for populate
+import Player from "@/lib/models/Player";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(req, ctx) {
   try {
     await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const params = ctx?.params ? await ctx.params : {};
     const { id } = params || {};
@@ -16,6 +22,11 @@ export async function GET(req, ctx) {
 
     if (!team) {
       return Response.json({ error: "Team not found" }, { status: 404 });
+    }
+
+    // Check ownership
+    if (team.createdBy.toString() !== session.user.id) {
+      return Response.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const players = await Player.find({ team: id }).select("name position");
@@ -38,6 +49,10 @@ export async function GET(req, ctx) {
 export async function PATCH(req, ctx) {
   try {
     await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const params = ctx?.params ? await ctx.params : {};
     const { id } = params || {};
@@ -51,14 +66,20 @@ export async function PATCH(req, ctx) {
       return Response.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    const { name, description, players } = data;
+    const { name, description, players, pinned } = data;
 
     const team = await Team.findById(id);
     if (!team)
       return Response.json({ error: "Team not found" }, { status: 404 });
 
+    // Check ownership
+    if (team.createdBy.toString() !== session.user.id) {
+      return Response.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     if (typeof name === "string") team.name = name;
     if (typeof description === "string") team.description = description;
+    if (typeof pinned === "boolean") team.pinned = pinned;
 
     if (Array.isArray(players)) {
       team.players = players;
@@ -78,7 +99,6 @@ export async function PATCH(req, ctx) {
         );
       }
 
-      // Remove team id from deselected players
       if (toRemove.length > 0) {
         await Player.updateMany(
           { _id: { $in: toRemove } },
@@ -89,7 +109,6 @@ export async function PATCH(req, ctx) {
 
     await team.save();
 
-    // Return updated team with players
     const playersList = await Player.find({ team: id }).select("name position");
     const result = { ...team.toObject(), players: playersList };
     return Response.json(result);

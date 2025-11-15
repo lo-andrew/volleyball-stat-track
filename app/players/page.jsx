@@ -13,7 +13,7 @@ export default function PlayersPage() {
 
   return (
     <main className="p-6">
-      <h1 className="text-xl font-bold mb-4">Players</h1>
+      <h1 className="text-xl font-bold mb-4">Your Players</h1>
       <ul className="space-y-2">
         {players.map((p) => (
           <li key={p._id} className="flex items-center gap-2">

@@ -11,7 +11,7 @@ export default function PlayerDetailPage() {
   const { id: playerId } = useParams();
   const { player, statlines, lifetimeStats, loading, error } =
     usePlayer(playerId);
-  const { data: session } = useSession(); // ✅ get logged-in user
+  const { data: session } = useSession(); 
 
   if (loading) return <p className="p-6">Loading...</p>;
   if (error) return <p className="p-6">Error loading player.</p>;

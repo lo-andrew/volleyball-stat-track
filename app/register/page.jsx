@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,57 +29,89 @@ export default function RegisterPage() {
         return;
       }
 
-      await signIn("credentials", {
+      const signInResult = await signIn("credentials", {
+        redirect: false,
         email,
         password,
-        callbackUrl: "/dashboard",
       });
+
+      if (signInResult.ok) {
+        router.push("/");
+      } else {
+        setError(
+          "Registration successful but login failed. Please try logging in."
+        );
+        setLoading(false);
+      }
     } catch (err) {
       setError("Unexpected error");
+      setLoading(false);
     }
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 shadow-lg rounded-lg bg-base-100">
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <h1 className="text-2xl font-bold">Create an Account</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-base-200 to-base-100">
+      <div className="max-w-md w-full p-8 bg-base-100 shadow-lg rounded-lg">
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-bold text-center mb-2">
+            Create Account
+          </h1>
+          <p className="text-center text-gray-600 mb-8">
+            Join Volleyball Stat Tracker and start tracking your stats
+          </p>
 
-        <form
-          className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm space-y-4"
-          onSubmit={handleRegister}
-        >
-          <div>
-            <label className="block font-medium mb-1">Email</label>
-            <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-          </div>
+          <form className="space-y-4" onSubmit={handleRegister}>
+            <div>
+              <label className="block font-medium mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+                className="input input-bordered w-full"
+              />
+            </div>
 
-          <div>
-            <label className="block font-medium mb-1">Password</label>
-            <input
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
+            <div>
+              <label className="block font-medium mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="input input-bordered w-full"
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                Use a strong password with at least 8 characters
+              </p>
+            </div>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
-          </div>
+            {error && (
+              <div className="alert alert-error text-sm">
+                <span>{error}</span>
+              </div>
+            )}
 
-          <div>
             <button
-              className="btn btn-primary w-full mt-2 col-start-2 col-span-2"
+              className="btn btn-primary w-full mt-4"
               type="submit"
               disabled={loading}
             >
-              {loading ? "Registering..." : "Register"}
+              {loading ? "Creating Account..." : "Register"}
             </button>
-          </div>
-        </form>
+          </form>
+
+          <div className="divider my-4">OR</div>
+
+          <p className="text-center text-gray-600">
+            Already have an account?{" "}
+            <a href="/login" className="link link-primary font-semibold">
+              Login here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

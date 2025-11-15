@@ -26,42 +26,59 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 shadow-lg rounded-lg bg-base-100">
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <h1 className="text-2xl font-bold">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-base-200 to-base-100">
+      <div className="max-w-md w-full p-8 bg-base-100 shadow-lg rounded-lg">
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-bold text-center mb-2">Login</h1>
+          <p className="text-center text-gray-600 mb-8">
+            Sign in to your Volleyball Stat Tracker account
+          </p>
 
-        <form
-          className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm space-y-4"
-          onSubmit={handleLogin}
-        >
-          <div>
-            <label className="block font-medium mb-1">Email</label>
-            <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-          </div>
+          <form className="space-y-4" onSubmit={handleLogin}>
+            <div>
+              <label className="block font-medium mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+                className="input input-bordered w-full"
+              />
+            </div>
 
-          <div>
-            <label className="block font-medium mb-1">Password</label>
-            <input
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-            {error && <p style={{ color: "red" }}>{error}</p>}
-          </div>
+            <div>
+              <label className="block font-medium mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="input input-bordered w-full"
+              />
+            </div>
 
-          <div>
-            <button
-              className="btn btn-primary w-full mt-2 col-start-2 col-span-2"
-              type="submit"
-            >
+            {error && (
+              <div className="alert alert-error text-sm">
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button className="btn btn-primary w-full mt-4" type="submit">
               Login
             </button>
-          </div>
-        </form>
+          </form>
+
+          <div className="divider my-4">OR</div>
+
+          <p className="text-center text-gray-600">
+            Don't have an account?{" "}
+            <a href="/register" className="link link-primary font-semibold">
+              Register here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

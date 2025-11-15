@@ -6,10 +6,26 @@ import { useFormik } from "formik";
 export default function AddGame() {
   const [teams, setTeams] = useState([]);
 
+  const sortTeams = (list) => {
+    // work on a shallow copy and coerce types so sorting is stable
+    const normalized = (list || []).map((t) => ({
+      ...t,
+      _id: String(t._id),
+      pinned: Boolean(t.pinned),
+    }));
+    return normalized.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      const da = a.lastUsedAt ? new Date(a.lastUsedAt) : new Date(0);
+      const db = b.lastUsedAt ? new Date(b.lastUsedAt) : new Date(0);
+      return db - da;
+    });
+  };
+
   useEffect(() => {
     fetch("/api/teams")
       .then((res) => res.json())
-      .then((data) => setTeams(data))
+      .then((data) => setTeams(sortTeams(data)))
       .catch(console.error);
   }, []);
 
@@ -33,6 +49,14 @@ export default function AddGame() {
         if (!res.ok) throw new Error("Failed to create game");
         alert("Game Added!");
         resetForm();
+
+        // refresh teams to pick up updated usage/lastUsedAt
+        try {
+          const refreshed = await fetch("/api/teams").then((r) => r.json());
+          setTeams(sortTeams(refreshed));
+        } catch (err) {
+          console.error("Failed to refresh teams", err);
+        }
       } catch (err) {
         console.error(err);
         alert("Error creating game");
@@ -45,7 +69,6 @@ export default function AddGame() {
       <h1 className="text-2xl font-bold mb-4">Add New Game</h1>
 
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* date */}
         <div>
           <label className="block font-medium mb-1">Date</label>
           <input
@@ -58,7 +81,6 @@ export default function AddGame() {
           />
         </div>
 
-        {/* team a */}
         <div>
           <label className="block font-medium mb-1">Team A</label>
           <select
@@ -69,15 +91,29 @@ export default function AddGame() {
             required
           >
             <option value="">Select Team A</option>
-            {teams.map((team) => (
-              <option key={team._id} value={team._id}>
-                {team.name}
-              </option>
-            ))}
+            {teams.filter((t) => t.pinned).length > 0 && (
+              <optgroup label="Pinned Teams">
+                {teams
+                  .filter((t) => t.pinned)
+                  .map((team) => (
+                    <option key={team._id} value={team._id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </optgroup>
+            )}
+            <optgroup label="Other Teams">
+              {teams
+                .filter((t) => !t.pinned)
+                .map((team) => (
+                  <option key={team._id} value={team._id}>
+                    {team.name}
+                  </option>
+                ))}
+            </optgroup>
           </select>
         </div>
 
-        {/* team b */}
         <div>
           <label className="block font-medium mb-1">Team B</label>
           <select
@@ -88,15 +124,29 @@ export default function AddGame() {
             required
           >
             <option value="">Select Team B</option>
-            {teams.map((team) => (
-              <option key={team._id} value={team._id}>
-                {team.name}
-              </option>
-            ))}
+            {teams.filter((t) => t.pinned).length > 0 && (
+              <optgroup label="Pinned Teams">
+                {teams
+                  .filter((t) => t.pinned)
+                  .map((team) => (
+                    <option key={team._id} value={team._id}>
+                      {team.name}
+                    </option>
+                  ))}
+              </optgroup>
+            )}
+            <optgroup label="Other Teams">
+              {teams
+                .filter((t) => !t.pinned)
+                .map((team) => (
+                  <option key={team._id} value={team._id}>
+                    {team.name}
+                  </option>
+                ))}
+            </optgroup>
           </select>
         </div>
 
-        {/* points */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Points (Team A)</label>
@@ -124,7 +174,6 @@ export default function AddGame() {
           </div>
         </div>
 
-        {/* set */}
         <div>
           <label className="block font-medium mb-1">Set</label>
           <input

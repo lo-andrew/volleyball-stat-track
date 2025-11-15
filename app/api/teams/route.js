@@ -1,17 +1,18 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Team from "@/lib/models/Team";
-import Player from "@/lib/models/Player"; // Import Player model to ensure it's registered
+import Player from "@/lib/models/Player";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET() {
   try {
     await dbConnect();
-    // First get teams without populate to ensure they exist
-    const teams = await Team.find();
-
-    if (!teams) {
-      console.error("No teams found or database error");
-      return Response.json({ error: "Failed to fetch teams" }, { status: 500 });
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const teams = await Team.find({ createdBy: session.user.id });
 
     return Response.json(teams);
   } catch (error) {
@@ -26,8 +27,16 @@ export async function GET() {
 export async function POST(req) {
   try {
     await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const data = await req.json();
-    const newTeam = await Team.create(data);
+    const newTeam = await Team.create({
+      ...data,
+      createdBy: session.user.id,
+    });
     return Response.json(newTeam, { status: 201 });
   } catch (error) {
     console.error("Teams POST error:", error);

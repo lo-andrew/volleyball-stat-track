@@ -59,7 +59,15 @@ export default function useAddPlayer() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
+        let errorData = {};
+        try {
+          errorData = await res.json();
+        } catch (parseErr) {
+          console.error("Failed to parse error response:", parseErr);
+          errorData = {
+            error: `Server error: ${res.status} ${res.statusText}`,
+          };
+        }
         throw new Error(errorData.error || "Failed to create player");
       }
 
