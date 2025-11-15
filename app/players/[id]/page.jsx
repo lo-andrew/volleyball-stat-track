@@ -17,7 +17,7 @@ export default function PlayerDetailPage() {
   if (error) return <p className="p-6">Error loading player.</p>;
   if (!player) return <p className="p-6">Player not found.</p>;
 
-  // Check ownership
+  // check if owner
   const isOwner = session?.user?.id === player.createdBy;
 
   return (
