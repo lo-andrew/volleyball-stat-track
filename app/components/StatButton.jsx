@@ -1,6 +1,5 @@
 export default function StatButton({ category, field, value, setFieldValue }) {
   const handleIncrement = () => {
-    // Update the specific nested field while preserving the rest of the category object
     setFieldValue(`${category}.${field}`, value + 1);
   };
 

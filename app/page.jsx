@@ -12,12 +12,10 @@ export default function Home() {
   const [games, setGames] = useState([]);
 
   useEffect(() => {
-    // If not authenticated, show login prompt instead of fetching data
     if (status === "unauthenticated") {
       return;
     }
 
-    // Fetch data only when authenticated
     if (status === "authenticated") {
       fetch("/api/top-players")
         .then((res) => res.json())
@@ -40,7 +38,6 @@ export default function Home() {
     return gameDate >= sevenDaysAgo && gameDate <= now;
   });
 
-  // Show login prompt for unauthenticated users
   if (status === "unauthenticated") {
     return (
       <div className="grid grid-cols-12 sm:grid-cols-12 min-h-screen items-center justify-center">
@@ -78,7 +75,6 @@ export default function Home() {
     );
   }
 
-  // Show loading state while session is loading
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -87,7 +83,6 @@ export default function Home() {
     );
   }
 
-  // Show authenticated dashboard
   return (
     <>
       <div className="grid grid-cols-12 sm:grid-cols-12">

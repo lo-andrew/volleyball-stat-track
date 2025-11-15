@@ -121,7 +121,6 @@ export default function EditTeamPage() {
         <div>
           <label className="block font-medium mb-2">Players</label>
           <div className="grid grid-cols-2 gap-2 max-h-64 overflow-auto p-2 border rounded">
-            {/* Only show players that currently list this team in their team array */}
             {allPlayers
               .filter((p) => {
                 const teamIds = (p.team || [])

@@ -6,7 +6,6 @@ export default function useAddStats() {
   const [selectedGame, setSelectedGame] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch all games on mount
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -27,7 +26,6 @@ export default function useAddStats() {
     };
   }, []);
 
-  // When a game is selected, fetch players for both teams
   useEffect(() => {
     if (!selectedGame) {
       setPlayers([]);

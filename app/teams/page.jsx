@@ -20,7 +20,6 @@ export default function TeamsPage() {
     fetch("/api/teams")
       .then((res) => res.json())
       .then((data) => {
-        // normalize fields to avoid type/coercion issues from the API
         const normalized = (data || []).map((t) => ({
           ...t,
           _id: String(t._id),
@@ -42,7 +41,6 @@ export default function TeamsPage() {
 
   const togglePin = async (team) => {
     try {
-      // optimistic UI: flip locally first for immediate feedback
       setTeams((prev) => {
         const next = prev.map((t) =>
           t._id === team._id ? { ...t, pinned: !t.pinned } : t
@@ -61,7 +59,6 @@ export default function TeamsPage() {
       });
       console.debug("togglePin response:", updated);
 
-      // If server didn't return a pinned boolean (edge cases), re-fetch full list
       if (typeof updated.pinned !== "boolean") {
         fetch("/api/teams")
           .then((res) => res.json())
@@ -86,7 +83,6 @@ export default function TeamsPage() {
         return;
       }
 
-      // normalize updated and merge into state to ensure types match
       const norm = {
         ...updated,
         _id: String(updated._id),
